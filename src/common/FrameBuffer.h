@@ -5,7 +5,6 @@
 #include "Define.h"
 #include "GLWindow.h"
 
-
 class RenderTarget
 {
 public:
@@ -73,6 +72,8 @@ public:
         blitFramebuffer(dstX0, dstY0, dstX1, dstY1, dst->getHandle(), samples);
     }
     void blitFramebuffer(int dstX0, int dstY0, int dstX1, int dstY1, GLuint dstFrameBuffer, GLsizei sampleCount ) const;
+
+    [[nodiscard]]std::vector<uint8_t> readPixel() const;
 
     GLuint getHandle() const { return this->handle; }
     uint32_t getWidth() const { return this->width; }

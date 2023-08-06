@@ -20,14 +20,22 @@ public:
     PictureScene(const PictureScene&) = delete;
     PictureScene& operator=(PictureScene&) = delete;
 
-
 private:
     PictureScene(int width, int height);
+
+    void onMouseEvent(const MouseEvent* e) override;
 
     void draw() override;
     void drawProperty() override;
 
     TextureRef texture;
+    ShaderRef shader;
+    Camera2DRef camera;
 
+    math::Vec4 color{1.0f, 1.0f, 1.0f, 1.0f};
+    float rotation = 0.0f;
+
+    math::Vec2 lastMousePos{};
+    bool holdLeftButton{false};
 };
 

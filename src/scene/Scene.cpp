@@ -12,6 +12,14 @@ Scene::Scene(const char* name, int width, int height) :name(name), width(width),
         this->fbResolved = FrameBuffer::create(width, height, RenderTarget::kTexColor, RenderTarget::kNone);
         this->fbDraw = FrameBuffer::createMultisample(width, height, 4, true, true);
     }
+
+    this->mouseListener = MouseListener::create();
+    this->mouseListener->onMouseEvent = [this](auto e){ this->onMouseEvent(e); };
+    EventSystem::get()->subscribe(this->mouseListener);
+
+    this->keyListener = KeyListener::create();
+    this->keyListener->onKey = [this](auto e){ this->onKeyEvent(e); };
+    EventSystem::get()->subscribe(this->keyListener);
 }
 
 TextureRef Scene::getColorTexture()
@@ -47,6 +55,7 @@ void Scene::render()
 {
     fbDraw->bind();
     glClearColor(clearColor.r, clearColor.g, clearColor.b, clearColor.a);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
     this->draw();
 
@@ -57,3 +66,12 @@ void Scene::render()
     this->drawProperty();
 }
 
+void Scene::onMouseEvent(const MouseEvent* e)
+{
+
+}
+
+void Scene::onKeyEvent(const KeyEvent* e)
+{
+
+}

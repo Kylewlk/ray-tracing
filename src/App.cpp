@@ -32,7 +32,7 @@ void App::run()
     win->init(winWidth, winHeight, "Ray Tracing");
 
     std::string titleFormat = "Ray Tracing, Graphic-FPS: ";
-    std::string title = titleFormat;
+    std::string title;
     int32_t frameCount = 0;
     int32_t fps = 0;
     double timeDuration{0.0f};
@@ -101,6 +101,7 @@ void App::setupMouseEvent()
             {
                 app->oldMouseButtonFun(window, button, action, mods);
             }
+            app->holdMouseButtons[button] = false;
         }
     });
     oldCursorPosFun = glfwSetCursorPosCallback(win->getGlfwWindow(), [](GLFWwindow* window, double xPos, double yPos){
@@ -142,6 +143,9 @@ void App::init()
     ImGui_ImplOpenGL3_Init("#version 430");
 
     EventSystem::get()->dispatchCustomEvent(CustomEvent::initSystemEvent);
+
+    this->currentMenuIndex = mainMenuCount - 1;
+    this->mainScene = mainMenus[currentMenuIndex].function();
 }
 
 void App::clean()
@@ -179,6 +183,7 @@ void App::render()
             {
                 this->mainScene = mainMenus[i].function();
                 this->currentMenuIndex = i;
+                App::resetOpenGLStates();
             }
         }
     }

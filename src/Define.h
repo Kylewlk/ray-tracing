@@ -82,3 +82,11 @@ using ShaderRef = std::shared_ptr<Shader>;
 
 class Scene;
 using SceneRef = std::shared_ptr<Scene>;
+
+class Camera2D;
+using Camera2DRef = std::shared_ptr<Camera2D>;
+
+class Camera3D;
+using Camera3DRef = std::shared_ptr<Camera3D>;
+
+

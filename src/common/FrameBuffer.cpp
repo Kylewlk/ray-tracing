@@ -292,7 +292,7 @@ bool FrameBuffer::initMultisample(int width_, int height_, GLsizei samples,  boo
 }
 
 
-void FrameBuffer:: blitFramebuffer(int dstX0, int dstY0, int dstX1, int dstY1, GLuint frameBuffer, GLsizei sampleCount) const
+void FrameBuffer::blitFramebuffer(int dstX0, int dstY0, int dstX1, int dstY1, GLuint frameBuffer, GLsizei sampleCount) const
 {
     if (this->colorAttachments[0]->samples > 1 || sampleCount > 1)
     {
@@ -310,4 +310,12 @@ void FrameBuffer:: blitFramebuffer(int dstX0, int dstY0, int dstX1, int dstY1, G
     glBindFramebuffer(GL_FRAMEBUFFER, oldFboId);
     oldFboId = -1;
     CHECK_GL_ERROR();
+}
+
+std::vector<uint8_t> FrameBuffer::readPixel() const
+{
+    glBindFramebuffer(GL_READ_FRAMEBUFFER, this->handle);
+    std::vector<uint8_t> pixels(this->width * this->height * 4);
+    glReadPixels(0, 0, (GLsizei)width, (GLsizei)height, GL_RGBA, GL_UNSIGNED_BYTE, (void*)pixels.data());
+    return pixels;
 }
