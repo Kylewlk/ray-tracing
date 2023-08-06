@@ -126,7 +126,7 @@ PenaltyIndentedWhitespace: 0
 PointerAlignment: Left
 ReferenceAlignment: Left
 ReflowComments: false
-SortIncludes: CaseInsensitive
+SortIncludes: Never
 SortJavaStaticImport: Before
 SortUsingDeclarations: true
 SpaceAfterCStyleCast: true
