@@ -56,8 +56,14 @@ void PictureScene::draw()
 
 void PictureScene::drawProperty()
 {
+    if (!showPropertyWindow)
+    {
+        return;
+    }
+
     if(ImGui::Begin(Scene::PropertyWindow, &showPropertyWindow, 0))
     {
+        ImGui::SetWindowSize({300, 400}, ImGuiCond_FirstUseEver);
         if (ImGui::Button("Reset", {100.0f, 0}))
         {
             this->color = { 1.0f, 1.0f, 1.0f, 1.0f};
