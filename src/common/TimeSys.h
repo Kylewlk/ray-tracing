@@ -32,9 +32,9 @@ public:
         return std::chrono::time_point_cast<std::chrono::milliseconds>(timeSys.now).time_since_epoch().count();
     }
 
-    [[nodiscard]] static float getFrameDuration()
+    [[nodiscard]] static double getDelta()
     {
-        return timeSys.frameDuration;
+        return timeSys.delta;
     }
 
     [[nodiscard]] static double getTime()
@@ -62,7 +62,7 @@ private:
 
     system_time_point startTime;
     system_time_point now;
-    float frameDuration{};
+    double delta{};
     double time{};
 
     system_time_point startTimingPoint;

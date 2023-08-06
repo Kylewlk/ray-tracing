@@ -13,13 +13,13 @@
 void App::run()
 {
     auto win = GLWindow::get();
-    win->init(winWidth, winHeight, "graphic");
+    win->init(winWidth, winHeight, "Ray Tracing");
 
-    std::string titleFormat = "graphic - FPS: ";
-    std::string title = "graphic - FPS: ";
+    std::string titleFormat = "Ray Tracing, Graphic-FPS: ";
+    std::string title = titleFormat;
     int32_t frameCount = 0;
     int32_t fps = 0;
-    float timeDuration{0.0f};
+    double timeDuration{0.0f};
 
     this->setupMouseEvent();
     this->init();
@@ -36,7 +36,7 @@ void App::run()
         this->render();
 
         ++frameCount;
-        timeDuration += TimeSys::getFrameDuration();
+        timeDuration += TimeSys::getDelta();
         if (timeDuration > 1.0f)
         {
             fps = static_cast<int32_t>(std::round(static_cast<float>(frameCount)/timeDuration));
@@ -156,6 +156,18 @@ void App::render()
 
     this->showDockSpace();
 
+     ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.13f, 0.17f, 0.20f, 1.00f));
+    if(ImGui::Begin("MainMenu", &openMenu, ImGuiWindowFlags_NoCollapse))
+    {
+        if (ImGui::MenuItem("Test", nullptr, false))
+        {
+//            item.fun();
+//            this->currentSelect = &item;
+        }
+    }
+    ImGui::End();
+    ImGui::PopStyleColor();
+
 //    if (mainScene != nullptr)
     {
         ImGui::Begin("MainScene");
@@ -189,7 +201,7 @@ void App::showDockSpace()
 {
     const auto& winSize = GLWindow::get()->getSize();
     bool openDockSpace = true;
-    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground ;
+    ImGuiWindowFlags window_flags = ImGuiWindowFlags_NoDocking | ImGuiWindowFlags_NoBackground;
     window_flags |= ImGuiWindowFlags_NoTitleBar | ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_NoResize | ImGuiWindowFlags_NoMove;
     window_flags |= ImGuiWindowFlags_NoBringToFrontOnFocus | ImGuiWindowFlags_NoNavFocus;
     const ImGuiViewport* viewport = ImGui::GetMainViewport();
@@ -215,8 +227,11 @@ void App::showDockSpace()
         ImGuiID right;
         ImGuiID left = ImGui::DockBuilderSplitNode(center, ImGuiDir_Left, 0.2f, nullptr, &right);
 
-        ImGuiDockNode* node = ImGui::DockBuilderGetNode(right);
-        node->LocalFlags |= ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDocking;
+        ImGuiDockNode* rightNode = ImGui::DockBuilderGetNode(right);
+        rightNode->LocalFlags |= ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDocking;
+
+        ImGuiDockNode* leftNode = ImGui::DockBuilderGetNode(left);
+        leftNode->LocalFlags |= ImGuiDockNodeFlags_NoTabBar | ImGuiDockNodeFlags_NoDocking;
 
         ImGui::DockBuilderDockWindow("MainMenu", left);
         ImGui::DockBuilderDockWindow("MainScene", right);

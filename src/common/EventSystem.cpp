@@ -83,7 +83,8 @@ void EventSystem::update()
         timers.sort(sortCompareTimer);
         timersDirty = false;
     }
-    float frameTime = std::min(TimeSys::getFrameDuration(), maxFrameTime);
+
+    auto deltaTime = (float)std::min(TimeSys::getDelta(), maxFrameTime);
     for (auto& timer : timers)
     {
         if (timer == nullptr || timer->repeat <= 0 || timer->onTime == nullptr)
@@ -92,11 +93,13 @@ void EventSystem::update()
             timersDirty = true;
             continue;
         }
-        if (timer->delay - frameTime > 0)
+
+        if (timer->delay - deltaTime > 0)
         {
-            timer->delay -= frameTime;
+            timer->delay -= deltaTime;
             continue;
         }
+
         if (timer->interval < 0.001f)
         {
             timer->delay = 0.0f;
@@ -107,12 +110,12 @@ void EventSystem::update()
         {
             if (timer->delay > 0)
             {
-                timer->intervalDuration = frameTime - timer->delay;
+                timer->intervalDuration = deltaTime - timer->delay;
                 timer->delay = 0.0f;
             }
             else
             {
-                timer->intervalDuration += frameTime;
+                timer->intervalDuration += deltaTime;
             }
             while (timer->intervalDuration >= timer->interval)
             {
@@ -172,6 +175,7 @@ void EventSystem::subscribe(const ListenerRef& listener)
     EventType group = listener->getEventType();
     listenerGroups[group].emplace_back(listener);
     listenerGroupsDirty[group] = true;
+    listener->setIsRegistered(true);
 }
 
 void EventSystem::unsubscribe(const ListenerRef& listener)
@@ -179,12 +183,15 @@ void EventSystem::unsubscribe(const ListenerRef& listener)
 
     EventType group = listener->getEventType();
     auto it = std::find_if(listenerGroups[group].begin(), listenerGroups[group].end(),
-                           [&listener](const ListenerWeekRef& other) { return listener.get() == other.lock().get(); });
+                           [&listener](const ListenerWeekRef& other) {
+                               auto l = other.lock();
+                               return l != nullptr && listener == l;
+                           });
     if (it != listenerGroups[group].end())
     {
         listenerGroups[group].erase(it);
     }
-    if (listener->getIsRegistered())
+    else
     {
         std::cout << "No subscription listener\n";
     }
@@ -230,10 +237,12 @@ void EventSystem::dispatchMouseEvent(const MouseEvent* event)
     {
         sortListenerGroup(EventType::kEventMouse);
     }
+
     if(!this->listenerEnable[EventType::kEventMouse])
     {
         return;
     }
+
     for (auto& listener : listenerGroups[EventType::kEventMouse])
     {
         if (!listener.expired())

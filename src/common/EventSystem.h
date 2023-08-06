@@ -81,8 +81,8 @@ public:
 protected:
     explicit Listener(EventType type) : type(type) {}
 
-    bool isRegistered{false};
     int priority{0};
+    bool isRegistered{false};
     bool isEnabled{true};
 
 private:
@@ -158,7 +158,7 @@ private:
     bool listenerGroupsDirty[EventType::COUNT]{false};
     bool listenerEnable[EventType::COUNT]{true, true, true, true};
 
-    float maxFrameTime{1.0f};
+    double maxFrameTime{1.0f};
 };
 
 class MouseEvent : public Event

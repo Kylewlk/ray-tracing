@@ -6,11 +6,6 @@
 #include "common/Logger.h"
 
 
-static void erro_callback(int error, const char* description)
-{
-    LOGE("Glfw Error: {}, description:", error, description);
-}
-
 GLWindow* GLWindow::get()
 {
     static std::unique_ptr<GLWindow> win;
@@ -45,7 +40,9 @@ GLWindow::~GLWindow()
 
 bool GLWindow::init(int width, int height, const std::string& pTitle)
 {
-    glfwSetErrorCallback(erro_callback);
+    glfwSetErrorCallback([](int error, const char* description){
+        LOGE("Glfw Error: {}, description:", error, description);
+    });
 
     if (!glfwInit())
     {

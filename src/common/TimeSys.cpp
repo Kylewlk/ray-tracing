@@ -18,7 +18,7 @@ TimeSys::TimeSys()
 void TimeSys::update()
 {
     auto current = high_resolution_clock::now();
-    timeSys.frameDuration = duration<float, std::chrono::seconds::period>(current - timeSys.now).count();
+    timeSys.delta = duration<double, std::chrono::seconds::period>(current - timeSys.now).count();
     timeSys.time =  duration<double, std::chrono::seconds::period>(current - timeSys.startTime).count();
     timeSys.now = current;
 }

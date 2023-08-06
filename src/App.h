@@ -47,6 +47,7 @@ protected:
     GLFWmousebuttonfun oldMouseButtonFun{nullptr};
     GLFWcursorposfun oldCursorPosFun{nullptr};
     GLFWscrollfun oldScrollFun{nullptr};
+    bool openMenu{true};
     bool mainSceneActive{false};
     bool mainSceneHovered{false};
     int mainSceneX{0}, mainSceneY{0};
