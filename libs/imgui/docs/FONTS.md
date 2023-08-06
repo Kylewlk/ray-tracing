@@ -282,7 +282,7 @@ for (int rect_n = 0; rect_n < IM_ARRAYSIZE(rect_ids); rect_n++)
     int rect_id = rect_ids[rect_n];
     if (const ImFontAtlasCustomRect* rect = io.Fonts->GetCustomRectByIndex(rect_id))
     {
-        // Fill the custom rectangle with red pixels (in reality you would draw/copy your bitmap data here!)
+        // Fill the custom rectangle with red pixels (in reality you would render/copy your bitmap data here!)
         for (int y = 0; y < rect->Height; y++)
         {
             ImU32* p = (ImU32*)tex_pixels + (rect->Y + y) * tex_width + (rect->X);

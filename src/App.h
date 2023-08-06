@@ -3,7 +3,7 @@
 //
 #pragma once
 #include "Define.h"
-//#include "scene/BaseScene.h"
+#include "scene/Scene.hpp"
 #include "common/EventSystem.h"
 #include "common/MathHelp.h"
 #include "GLWindow.h"
@@ -42,14 +42,15 @@ protected:
 
     ImFont* defaultFont{};
 
-    CustomEventListenerRef sceneCreateEvent;
-
     GLFWmousebuttonfun oldMouseButtonFun{nullptr};
     GLFWcursorposfun oldCursorPosFun{nullptr};
     GLFWscrollfun oldScrollFun{nullptr};
     bool openMenu{true};
     bool mainSceneActive{false};
     bool mainSceneHovered{false};
+    int currentMenuIndex{-1};
     int mainSceneX{0}, mainSceneY{0};
     std::vector<bool> holdMouseButtons;
+
+    SceneRef mainScene;
 };

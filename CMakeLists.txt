@@ -15,5 +15,7 @@ add_executable(${target_name} ${src_code})
 add_subdirectory(libs)
 target_link_libraries(${target_name} ray-tracing-libs)
 
+target_include_directories(${target_name} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
+
 target_compile_options(${target_name} PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
 target_compile_definitions(${target_name} PRIVATE CURRENT_WORKING_DIR="${CMAKE_CURRENT_SOURCE_DIR}")

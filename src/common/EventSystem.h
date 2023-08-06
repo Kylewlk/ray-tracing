@@ -2,15 +2,7 @@
 // Created by Yun on 2021/11/13.
 //
 #pragma once
-#include <condition_variable>
-#include <cstdint>
-#include <functional>
-#include <list>
-#include <memory>
-#include <numeric>
-#include <utility>
-#include <atomic>
-
+#include "Define.h"
 #include "MathHelp.h"
 
 #undef max
@@ -24,31 +16,6 @@ enum EventType : int8_t
     kEventCustom,
     COUNT
 };
-
-class Listener;
-using ListenerRef = std::shared_ptr<Listener>;
-using ListenerWeekRef = std::weak_ptr<Listener>;
-
-class Timer;
-using TimerRef = std::shared_ptr<Timer>;
-using TimeCallBack = std::function<void()>;
-
-class MouseEvent;
-class MouseListener;
-using MouseListenerRef = std::shared_ptr<MouseListener>;
-
-class KeyEvent;
-class KeyListener;
-using KeyListenerRef = std::shared_ptr<KeyListener>;
-
-class WindowEvent;
-class WindowEventListener;
-using WindowEventListenerRef = std::shared_ptr<WindowEventListener>;
-
-class CustomEvent;
-class CustomEventListener;
-using CustomEventListenerRef = std::shared_ptr<CustomEventListener>;
-
 
 class Event
 {

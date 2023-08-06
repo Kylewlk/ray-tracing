@@ -5,10 +5,26 @@
 #include "App.h"
 #include "common/ChineseSimplifiedUnicode.h"
 #include "common/TimeSys.h"
+#include "common/Texture.h"
 #include "GLWindow.h"
 #include "imgui_internal.h"
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
+
+#include "scene/PictureScene.hpp"
+
+#define ADD_SCENE_MENU(scene) {scene::ID, &scene::create}
+
+static struct{
+    const char* name;
+    SceneRef (*function)();
+} mainMenus[]{
+    {PictureScene::ID, &PictureScene::create},
+    ADD_SCENE_MENU(PictureScene),
+};
+static const int mainMenuCount = sizeof(mainMenus)/(sizeof (mainMenus[0]));
+
+#undef ADD_SCENE_MENU
 
 void App::run()
 {
@@ -126,10 +142,6 @@ void App::init()
     ImGui_ImplOpenGL3_Init("#version 430");
 
     EventSystem::get()->dispatchCustomEvent(CustomEvent::initSystemEvent);
-
-    sceneCreateEvent = CustomEventListener::create("");
-    sceneCreateEvent->onCustomEvent = [](auto* e) { App::resetOpenGLStates(); };
-    EventSystem::get()->subscribe(sceneCreateEvent);
 }
 
 void App::clean()
@@ -138,6 +150,8 @@ void App::clean()
     ImGui_ImplOpenGL3_Shutdown();
     ImGui_ImplGlfw_Shutdown();
     ImGui::DestroyContext();
+
+    this->mainScene.reset();
 }
 
 void App::render()
@@ -159,16 +173,19 @@ void App::render()
      ImGui::PushStyleColor(ImGuiCol_WindowBg, ImVec4(0.13f, 0.17f, 0.20f, 1.00f));
     if(ImGui::Begin("MainMenu", &openMenu, ImGuiWindowFlags_NoCollapse))
     {
-        if (ImGui::MenuItem("Test", nullptr, false))
+        for (int i = 0; i < mainMenuCount; ++i)
         {
-//            item.fun();
-//            this->currentSelect = &item;
+            if (ImGui::MenuItem(mainMenus[i].name, nullptr, i == this->currentMenuIndex))
+            {
+                this->mainScene = mainMenus[i].function();
+                this->currentMenuIndex = i;
+            }
         }
     }
     ImGui::End();
     ImGui::PopStyleColor();
 
-//    if (mainScene != nullptr)
+    if (mainScene != nullptr)
     {
         ImGui::Begin("MainScene");
 
@@ -179,15 +196,16 @@ void App::render()
         this->mainSceneActive = ImGui::IsWindowFocused(ImGuiFocusedFlags_RootAndChildWindows);
         this->mainSceneHovered = ImGui::IsWindowHovered();
 
-//        mainScene->setSize({contentSize.x, contentSize.y});
-//        mainScene->draw();
-//        if (mainScene->getFrameBuffer() != nullptr)
-//        {
-//            auto drawList = ImGui::GetWindowDrawList();
-//            drawList->AddImage((ImTextureID*)(int64_t)mainScene->getTexHandle(),
-//                               {originPosition.x, originPosition.y},
-//                               {originPosition.x + contentSize.x, originPosition.y + contentSize.y});
-//        }
+        mainScene->resize((int)contentSize.x, (int)contentSize.y);
+        mainScene->render();
+        auto colorTexture = mainScene->getColorTexture();
+        if (colorTexture != nullptr)
+        {
+            auto drawList = ImGui::GetWindowDrawList();
+            drawList->AddImage((ImTextureID*)(int64_t)colorTexture->getHandle(),
+                               {originPosition.x, originPosition.y},
+                               {originPosition.x + contentSize.x, originPosition.y + contentSize.y});
+        }
 
         ImGui::End();
     }

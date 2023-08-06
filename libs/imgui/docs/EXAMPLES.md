@@ -232,7 +232,7 @@ However, consider that OS mouse cursors are typically drawn through a very speci
 path and will feel smoother than the majority of contents rendered via regular graphics API (including,
 but not limited to Dear ImGui windows). Because UI rendering and interaction happens on the same plane
 as the mouse, that disconnect may be jarring to particularly sensitive users.
-You may experiment with enabling the io.MouseDrawCursor flag to request Dear ImGui to draw a mouse cursor
+You may experiment with enabling the io.MouseDrawCursor flag to request Dear ImGui to render a mouse cursor
 using the regular graphics API, to help you visualize the difference between a "hardware" cursor and a
 regularly rendered software cursor.
 However, rendering a mouse cursor at 60 FPS will feel sluggish so you likely won't want to enable that at

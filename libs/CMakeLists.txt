@@ -5,6 +5,8 @@ project(${target_name})
 
 add_library(${target_name} INTERFACE)
 
+target_sources(${target_name} INTERFACE Lib.cpp)
+
 set_target_properties(${target_name}
         PROPERTIES FOLDER "${libs}"
 )
