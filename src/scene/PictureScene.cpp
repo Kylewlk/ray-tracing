@@ -44,7 +44,7 @@ void PictureScene::draw()
     this->camera->update();
 
     auto mat = camera->getViewProj() * math::rotateDegree(rotation, math::Z_Axis);
-    mat = mat * math::scale({(float)texture->getWidth() * 0.5f, (float)texture->getHeight() * 0.5f, 1.0f});
+    mat = mat * math::scale({(float)texture->getWidth() * 0.5f, -(float)texture->getHeight() * 0.5f, 1.0f});
 
     shader->use();
     glUniformMatrix4fv(1, 1, false, (float*)&mat);
@@ -115,7 +115,7 @@ void PictureScene::onMouseEvent(const MouseEvent* e)
         {
             auto delta = e->posDelta;
             delta *= this->camera->getViewScale();
-            this->camera->move({delta.x, delta.y, 0});
+            this->camera->move({delta.x, -delta.y, 0});
         }
     }
 }

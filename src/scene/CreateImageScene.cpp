@@ -44,16 +44,15 @@ CreateImageSceneRef CreateImageScene::create(int width, int height)
 void CreateImageScene::renderImage()
 {
     vec3 color{ 0.0, 0.0, 0.25};
-    for (int i = 0; i < imageHeight; ++i)
+    for (int y = 0; y < imageHeight; ++y)
     {
-        color[1] = double(i) / double(imageHeight - 1);
+        color[1] = double(y) / double(imageHeight - 1);
 
-        for (int j = 0; j < imageWidth; ++j)
+        for (int x = 0; x < imageWidth; ++x)
         {
-            color[0] = double(j) / double(imageWidth - 1);
+            color[0] = double(x) / double(imageWidth - 1);
 
-            auto data = this->pixels + ((imageWidth * i + j) * 3);
-            writeColor(data, color);
+            writeColor(this->pixels, imageWidth, x, y, color);
         }
     }
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, pixels);
@@ -95,7 +94,7 @@ void CreateImageScene::drawProperty()
         if (ImGui::Button("Save", {100.0f, 0}))
         {
             constexpr const char* path = ".data/create-image.png";
-
+            stbi_flip_vertically_on_write(true);
             stbi_write_png(path, imageWidth, imageHeight, 3, pixels, imageWidth * 3);
 
             auto workingDir = std::filesystem::current_path().u8string();
