@@ -13,6 +13,7 @@
 
 #include "scene/PictureScene.hpp"
 #include "scene/CreateImageScene.hpp"
+#include "scene/RayBackgroundScene.h"
 
 #define ADD_SCENE_MENU(scene) {scene::ID, &scene::create}
 
@@ -22,6 +23,7 @@ static struct{
 } mainMenus[]{
     ADD_SCENE_MENU(PictureScene),
     ADD_SCENE_MENU(CreateImageScene),
+    ADD_SCENE_MENU(RayBackgroundScene),
 };
 static const int mainMenuCount = sizeof(mainMenus)/(sizeof (mainMenus[0]));
 
