@@ -131,7 +131,7 @@ void CreateImageScene::onMouseEvent(const MouseEvent* e)
         {
             auto delta = e->posDelta;
             delta *= this->camera->getViewScale();
-            this->camera->move({delta.x, -delta.y, 0});
+            this->camera->move({delta.x, delta.y, 0});
         }
     }
 }

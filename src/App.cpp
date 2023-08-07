@@ -209,8 +209,8 @@ void App::render()
         {
             auto drawList = ImGui::GetWindowDrawList();
             drawList->AddImage((ImTextureID*)(int64_t)colorTexture->getHandle(),
-                               {originPosition.x, originPosition.y + contentSize.y},
-                               {originPosition.x + contentSize.x, originPosition.y});
+                               {originPosition.x, originPosition.y},
+                               {originPosition.x + contentSize.x, originPosition.y + contentSize.y});
         }
 
         ImGui::End();
