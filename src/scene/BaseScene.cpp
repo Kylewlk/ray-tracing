@@ -14,10 +14,8 @@
 BaseScene::BaseScene(const char* name, int width, int height)
     : Scene(name, width, height)
 {
-    this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
     this->shader = Shader::createByPath("asset/shader/v_mvp_pos_tex.vert", "asset/shader/f_draw_tex.frag");
     this->camera = Camera2D::create();
-
 }
 
 void BaseScene::setImageSize(int width, int height)
@@ -30,6 +28,11 @@ void BaseScene::draw()
 {
     this->camera->setViewSize((float)this->width, (float)this->height);
     this->camera->update();
+
+    if (this->texture == nullptr)
+    {
+        return;
+    }
 
     auto mat = camera->getViewProj();
     mat = mat * math::scale({(float)texture->getWidth() * 0.5f, (float)texture->getHeight() * 0.5f, 1.0f});
@@ -49,27 +52,74 @@ void BaseScene::drawProperty()
         return;
     }
 
-    if(ImGui::Begin(Scene::PropertyWindow, &showPropertyWindow, 0))
+    ImGui::Begin(Scene::PropertyWindow, &showPropertyWindow, ImGuiWindowFlags_NoCollapse);
+    ImGui::SetWindowSize({300, 400}, ImGuiCond_FirstUseEver);
+
+    ImGui::Text("Image Size: %d, %d", this->imageCurrentWidth, this->imageCurrentHeight);
+    ImGui::Separator();
+
+    if (ImGui::Button("Reset", {100.0f, 0}))
     {
-        ImGui::SetWindowSize({300, 400}, ImGuiCond_FirstUseEver);
-        if (ImGui::Button("Reset", {100.0f, 0}))
-        {
-            this->camera->resetView();
-        }
-
-        ImGui::Separator();
-
-        if (ImGui::Button("Save", {100.0f, 0}))
-        {
-            constexpr const char* path = ".data/create-image.png";
-            //            stbi_flip_vertically_on_write(true);
-            stbi_write_png(path, imageWidth, imageHeight, 3, this->imagePixels.data(), imageWidth * 3);
-
-            auto workingDir = std::filesystem::current_path().u8string();
-            LOGI("Save to picture: {}/{}", (const char*)workingDir.data(), path);
-        }
-
+        this->reset();
     }
+
+    char aspectRatioCheckBox[32] = {0};
+    snprintf(aspectRatioCheckBox, sizeof(aspectRatioCheckBox), "Lock Aspect Ratio(%.3f)", this->aspectRatio);
+    ImGui::Checkbox(aspectRatioCheckBox, &lockAspectRatio);
+    if(ImGui::SliderInt("Image Width", &imageWidth, 4, 4096, "%d", ImGuiSliderFlags_AlwaysClamp))
+    {
+        if (lockAspectRatio)
+        {
+            imageHeight = (int)(double(imageWidth)/aspectRatio);
+            if (imageHeight < 4 || imageHeight > 4096)
+            {
+                imageHeight = std::clamp(imageHeight, 4, 4096);
+                aspectRatio = double(imageWidth)/double(imageHeight);
+            }
+        }
+        else
+        {
+            aspectRatio = double(imageWidth)/double(imageHeight);
+        }
+    }
+    if(ImGui::SliderInt("Image Height", &imageHeight, 4, 4096, "%d", ImGuiSliderFlags_AlwaysClamp))
+    {
+        if (lockAspectRatio)
+        {
+            imageWidth = (int)(double(imageHeight) * aspectRatio);
+            if (imageWidth < 4 || imageWidth > 4096)
+            {
+                imageWidth = std::clamp(imageWidth, 4, 4096);
+                aspectRatio = double(imageWidth)/double(imageHeight);
+            }
+        }
+        else
+        {
+            aspectRatio = double(imageWidth)/double(imageHeight);
+        }
+    }
+
+
+    ImGui::Separator();
+
+    if (ImGui::Button("render", {100.0f, 0}))
+    {
+        LOGI("Render, {}", this->name);
+        this->renderImage();
+    }
+
+    if (ImGui::Button("Save", {100.0f, 0}))
+    {
+        std::string path = ".data/";
+        path += this->name;
+        path += ".png";
+        //            stbi_flip_vertically_on_write(true);
+        stbi_write_png(path.c_str(), imageWidth, imageHeight, 3, this->imagePixels.data(), imageWidth * 3);
+
+        auto workingDir = std::filesystem::current_path().u8string();
+        LOGI("Save to picture: {}/{}", (const char*)workingDir.data(), path);
+    }
+
     ImGui::End();
 }
 
@@ -102,4 +152,9 @@ void BaseScene::onMouseEvent(const MouseEvent* e)
             this->camera->move({delta.x, delta.y, 0});
         }
     }
+}
+
+void BaseScene::reset()
+{
+    this->camera->resetView();
 }

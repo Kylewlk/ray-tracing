@@ -9,6 +9,8 @@
 RayBackgroundScene::RayBackgroundScene()
     : BaseScene(ID, 0, 0)
 {
+    this->imageWidth = 400;
+    this->imageHeight = 400;
     RayBackgroundScene::renderImage();
 }
 
@@ -23,6 +25,9 @@ SceneRef RayBackgroundScene::create()
 
 void RayBackgroundScene::renderImage()
 {
+    this->imageCurrentWidth = this->imageWidth;
+    this->imageCurrentHeight = this->imageHeight;
+
     this->imagePixels.clear();
     this->imagePixels.resize(imageWidth * imageHeight * 3);
 
@@ -38,5 +43,13 @@ void RayBackgroundScene::renderImage()
             writeColor(this->imagePixels.data(), imageWidth, x, y, color);
         }
     }
+    this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
+}
+
+void RayBackgroundScene::reset()
+{
+    this->imageWidth = 400;
+    this->imageHeight = 400;
+    BaseScene::reset();
 }

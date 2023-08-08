@@ -16,6 +16,7 @@ public:
 
 private:
     RayBackgroundScene();
+    void reset() override;
 
 };
 

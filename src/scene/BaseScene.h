@@ -31,11 +31,14 @@ protected:
 
     void draw() override;
     void drawProperty() override;
+    virtual void reset();
 
     std::vector<uint8_t> imagePixels;
-    double aspectRatio = 1.0;
+    int imageCurrentWidth = 256;
+    int imageCurrentHeight = 256;
     int imageWidth = 256;
     int imageHeight = 256;
+    double aspectRatio = 1.0;
     double viewportHeight = 2.0;
     double viewportWidth = 2.0;
 
@@ -45,5 +48,7 @@ protected:
 
     math::Vec2 lastMousePos{};
     bool holdLeftButton{false};
+
+    bool lockAspectRatio{true};
 };
 
