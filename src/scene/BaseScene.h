@@ -39,8 +39,6 @@ protected:
     int imageWidth = 256;
     int imageHeight = 256;
     double aspectRatio = 1.0;
-    double viewportHeight = 2.0;
-    double viewportWidth = 2.0;
 
     TextureRef texture;
     ShaderRef shader;

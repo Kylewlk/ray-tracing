@@ -97,6 +97,7 @@ inline vec3 unit_vector(vec3 v) {
 
 // Type aliases for vec3using point3 = vec3;   // 3D point
 using color = vec3;    // RGB color
+using point3 = vec3;
 
 inline void writeColor(uint8_t* data, color pixel_color) {
     // Write the translated [0,255] value of each color component.

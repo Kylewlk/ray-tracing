@@ -4,6 +4,8 @@
 
 #pragma once
 #include "BaseScene.h"
+#include "ray_tracing/vec3.h"
+#include "ray_tracing/ray.h"
 
 class RayBackgroundScene : public BaseScene
 {
@@ -17,6 +19,8 @@ public:
 private:
     RayBackgroundScene();
     void reset() override;
+
+    color rayColor(const ray& ray);
 
 };
 
