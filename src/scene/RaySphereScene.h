@@ -21,7 +21,7 @@ private:
     void reset() override;
 
     color rayColor(const ray& ray);
-    bool hitSphere(const point3& center, double radius, const ray& r);
+    double hitSphere(const point3& center, double radius, const ray& r);
 };
 
 

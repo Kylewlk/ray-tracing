@@ -79,21 +79,29 @@ void RaySphereScene::reset()
 
 color RaySphereScene::rayColor(const ray& r)
 {
-    if (hitSphere({0, 0, -1}, 0.5, r))
+    const point3 center{0, 0, -1};
+    auto t = hitSphere(center, 0.5, r);
+    if (t >= 0.0)
     {
-        return {1, 0, 0};
+        vec3 N = unit_vector(r.at(t) - center);
+        return 0.5 * color(N + color(1, 1, 1));
     }
+    
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5*(unit_direction.y() + 1.0);
     return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
 }
 
-bool RaySphereScene::hitSphere(const point3& center, double radius, const ray& r)
+double RaySphereScene::hitSphere(const point3& center, double radius, const ray& r)
 {
     vec3 oc = r.origin() - center;
     auto a = dot(r.direction(), r.direction());
     auto b = 2.0 * dot(oc, r.direction());
     auto c = dot(oc, oc) - radius*radius;
     auto discriminant = b*b - 4*a*c;
-    return (discriminant >= 0);
+    if (discriminant < 0)
+    {
+        return  -1.0;
+    }
+    return (-b - sqrt(discriminant))/(2.0 * a);
 }
