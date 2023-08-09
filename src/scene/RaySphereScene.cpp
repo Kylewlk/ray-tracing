@@ -86,7 +86,7 @@ color RaySphereScene::rayColor(const ray& r)
         vec3 N = unit_vector(r.at(t) - center);
         return 0.5 * color(N + color(1, 1, 1));
     }
-    
+
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5*(unit_direction.y() + 1.0);
     return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
@@ -96,12 +96,12 @@ double RaySphereScene::hitSphere(const point3& center, double radius, const ray&
 {
     vec3 oc = r.origin() - center;
     auto a = dot(r.direction(), r.direction());
-    auto b = 2.0 * dot(oc, r.direction());
+    auto half_b = dot(oc, r.direction());
     auto c = dot(oc, oc) - radius*radius;
-    auto discriminant = b*b - 4*a*c;
+    auto discriminant = half_b*half_b - a*c;
     if (discriminant < 0)
     {
         return  -1.0;
     }
-    return (-b - sqrt(discriminant))/(2.0 * a);
+    return (-half_b - sqrt(discriminant)) / a;
 }
