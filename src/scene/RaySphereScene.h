@@ -4,8 +4,7 @@
 
 #pragma once
 #include "BaseScene.h"
-#include "ray_tracing/vec3.h"
-#include "ray_tracing/ray.h"
+#include "ray_tracing/hittable.h"
 
 class RaySphereScene : public BaseScene
 {
@@ -20,8 +19,7 @@ private:
     RaySphereScene();
     void reset() override;
 
-    color rayColor(const ray& ray);
-    double hitSphere(const point3& center, double radius, const ray& r);
+    color rayColor(const ray& ray, const hittable& world);
 };
 
 

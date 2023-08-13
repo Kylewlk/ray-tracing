@@ -4,8 +4,12 @@
 
 #include "RaySphereScene.h"
 #include "common/Texture.h"
-#include "ray_tracing/vec3.h"
-#include "ray_tracing/ray.h"
+
+#include "ray_tracing/rtweekend.h"
+#include "ray_tracing/hittable.h"
+#include "ray_tracing/hittable_list.h"
+#include "ray_tracing/sphere.h"
+
 
 RaySphereScene::RaySphereScene()
     : BaseScene(ID, 0, 0)
@@ -53,6 +57,11 @@ void RaySphereScene::renderImage()
                                - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
+    hittable_list world;
+
+    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
+
     // Render
     for (int j = 0; j < imageHeight; ++j) {
         for (int i = 0; i < imageWidth; ++i) {
@@ -60,7 +69,7 @@ void RaySphereScene::renderImage()
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            color pixel_color = rayColor(r);
+            color pixel_color = rayColor(r, world);
             writeColor(imagePixels.data(), imageWidth, i, j, pixel_color);
         }
     }
@@ -77,31 +86,15 @@ void RaySphereScene::reset()
     BaseScene::reset();
 }
 
-color RaySphereScene::rayColor(const ray& r)
+color RaySphereScene::rayColor(const ray& r, const hittable& world)
 {
-    const point3 center{0, 0, -1};
-    auto t = hitSphere(center, 0.5, r);
-    if (t >= 0.0)
-    {
-        vec3 N = unit_vector(r.at(t) - center);
-        return 0.5 * color(N + color(1, 1, 1));
+    hit_record rec;
+    if (world.hit(r, 0, infinity, rec)) {
+        return 0.5 * (rec.normal + color(1,1,1));
     }
+
 
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5*(unit_direction.y() + 1.0);
     return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
-}
-
-double RaySphereScene::hitSphere(const point3& center, double radius, const ray& r)
-{
-    vec3 oc = r.origin() - center;
-    auto a = dot(r.direction(), r.direction());
-    auto half_b = dot(oc, r.direction());
-    auto c = dot(oc, oc) - radius*radius;
-    auto discriminant = half_b*half_b - a*c;
-    if (discriminant < 0)
-    {
-        return  -1.0;
-    }
-    return (-half_b - sqrt(discriminant)) / a;
 }
