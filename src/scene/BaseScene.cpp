@@ -55,7 +55,7 @@ void BaseScene::drawProperty()
     ImGui::Begin(Scene::PropertyWindow, &showPropertyWindow, ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowSize({300, 400}, ImGuiCond_FirstUseEver);
 
-    ImGui::Text("Image Size: %d, %d", this->imageCurrentWidth, this->imageCurrentHeight);
+    ImGui::Text("Image Size: %d, %d, sampler: %d", this->imageCurrentWidth, this->imageCurrentHeight, this->samplerPerPixel);
     ImGui::Separator();
 
     if (ImGui::Button("Reset", {100.0f, 0}))
@@ -99,6 +99,7 @@ void BaseScene::drawProperty()
         }
     }
 
+    this->drawSpecificProperty();
 
     ImGui::Separator();
 
@@ -158,3 +159,9 @@ void BaseScene::reset()
 {
     this->camera->resetView();
 }
+
+void BaseScene::drawSpecificProperty()
+{
+
+}
+

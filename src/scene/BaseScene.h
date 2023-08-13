@@ -32,6 +32,7 @@ protected:
     void draw() override;
     void drawProperty() override;
     virtual void reset();
+    virtual void drawSpecificProperty();
 
     std::vector<uint8_t> imagePixels;
     int imageCurrentWidth = 256;
@@ -39,6 +40,7 @@ protected:
     int imageWidth = 256;
     int imageHeight = 256;
     double aspectRatio = 1.0;
+    int samplerPerPixel = 1;
 
     TextureRef texture;
     ShaderRef shader;

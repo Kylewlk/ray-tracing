@@ -9,7 +9,7 @@
 #include "common/EventSystem.h"
 #include "camera/Camera2D.h"
 #include "common/Logger.h"
-#include "ray_tracing/vec3.h"
+#include "ray_tracing/rtweekend.h"
 
 CreateImageScene::CreateImageScene(int width, int height)
     : Scene(ID, width, height)

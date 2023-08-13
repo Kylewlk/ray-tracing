@@ -4,8 +4,7 @@
 
 #pragma once
 #include "BaseScene.h"
-#include "ray_tracing/vec3.h"
-#include "ray_tracing/ray.h"
+#include "ray_tracing/rtweekend.h"
 
 class RayBackgroundScene : public BaseScene
 {

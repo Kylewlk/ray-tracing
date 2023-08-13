@@ -6,18 +6,19 @@
 #include "BaseScene.h"
 #include "ray_tracing/camera.h"
 
-class RaySphereScene2 : public BaseScene
+class RayAntialiasingScene : public BaseScene
 {
 public:
-    static constexpr const char* ID = "Ray Sphere2";
+    static constexpr const char* ID = "Ray Antialiasing";
 
     static SceneRef create();
 
     void renderImage() override;
 
 private:
-    RaySphereScene2();
+    RayAntialiasingScene();
     void reset() override;
+    void drawSpecificProperty() override;
 
     class camera cam;
 };

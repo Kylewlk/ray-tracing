@@ -80,8 +80,9 @@ void RaySphereScene::renderImage()
 
 void RaySphereScene::reset()
 {
+    this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
-    this->imageHeight = 400;
+    this->imageHeight = int(double(imageWidth)/aspectRatio);
     BaseScene::reset();
 }
 
