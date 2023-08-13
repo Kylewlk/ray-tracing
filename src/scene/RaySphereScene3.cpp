@@ -2,7 +2,7 @@
 // Created by wlk12 on 2023/8/7.
 //
 
-#include "RaySphereScene.h"
+#include "RaySphereScene3.h"
 #include "common/Texture.h"
 
 #include "ray_tracing/rtweekend.h"
@@ -11,25 +11,25 @@
 #include "ray_tracing/sphere.h"
 
 
-RaySphereScene::RaySphereScene()
+RaySphereScene3::RaySphereScene3()
     : BaseScene(ID, 0, 0)
 {
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    RaySphereScene::renderImage();
+    RaySphereScene3::renderImage();
 }
 
-SceneRef RaySphereScene::create()
+SceneRef RaySphereScene3::create()
 {
-    struct enable_make_shared : public RaySphereScene
+    struct enable_make_shared : public RaySphereScene3
     {
-        enable_make_shared() : RaySphereScene() {}
+        enable_make_shared() : RaySphereScene3() {}
     };
     return std::make_shared<enable_make_shared>();
 }
 
-void RaySphereScene::renderImage()
+void RaySphereScene3::renderImage()
 {
     this->imageCurrentWidth = this->imageWidth;
     this->imageCurrentHeight = this->imageHeight;
@@ -60,6 +60,7 @@ void RaySphereScene::renderImage()
     hittable_list world;
 
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
+    world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
 
     // Render
     for (int j = 0; j < imageHeight; ++j) {
@@ -78,14 +79,14 @@ void RaySphereScene::renderImage()
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
 }
 
-void RaySphereScene::reset()
+void RaySphereScene3::reset()
 {
     this->imageWidth = 400;
     this->imageHeight = 400;
     BaseScene::reset();
 }
 
-color RaySphereScene::rayColor(const ray& r, const hittable& world)
+color RaySphereScene3::rayColor(const ray& r, const hittable& world)
 {
     hit_record rec;
     if (world.hit(r, interval(0, infinity), rec)) {
