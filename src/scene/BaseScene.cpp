@@ -9,7 +9,6 @@
 #include "common/EventSystem.h"
 #include "camera/Camera2D.h"
 #include "common/Logger.h"
-#include "ray_tracing/vec3.h"
 
 BaseScene::BaseScene(const char* name, int width, int height)
     : Scene(name, width, height)

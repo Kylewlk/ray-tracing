@@ -14,6 +14,8 @@ public:
     /* Public Camera Parameters Here */
 //    double aspect_ratio = 1.0;  // Ratio of image width over height
 //    int    image_width  = 100;  // Rendered image width in pixel count
+    bool useMaterial = false;
+    int max_depth         = 10;   // Maximum number of ray bounces into scene
 
 
     void render(const hittable& world, double aspectRatio, int imageWidth, std::vector<uint8_t>& pixelData) {
@@ -44,7 +46,14 @@ public:
                 color pixel_color(0,0,0);
                 for (int sample = 0; sample < samples_per_pixel; ++sample) {
                     ray r = get_ray(i, j);
-                    pixel_color += ray_color(r, world);
+                    if (this->useMaterial)
+                    {
+                        pixel_color += ray_color(r, this->max_depth, world);
+                    }
+                    else
+                    {
+                        pixel_color += ray_color(r, world);
+                    }
                 }
                 writeColor(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
             }
@@ -95,7 +104,7 @@ private:
         pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
     }
 
-    color ray_color(const ray& r, const hittable& world) const {
+    [[nodiscard]] static color ray_color(const ray& r, const hittable& world) {
         hit_record rec;
 
         if (world.hit(r, interval(0, infinity), rec)) {
@@ -107,7 +116,26 @@ private:
         return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
     }
 
-    ray get_ray(int i, int j) const {
+
+    [[nodiscard]] static color ray_color(const ray& r, int depth, const hittable& world) {
+        hit_record rec;
+
+        // If we've exceeded the ray bounce limit, no more light is gathered.
+        if (depth <= 0)
+            return {0,0,0};
+
+        if (world.hit(r, interval(0, infinity), rec)) {
+            vec3 direction = random_on_hemisphere(rec.normal);
+            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+//            return 0.5 * (rec.normal + color(1,1,1));
+        }
+
+        vec3 unit_direction = unit_vector(r.direction());
+        auto a = 0.5*(unit_direction.y() + 1.0);
+        return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);
+    }
+
+    [[nodiscard]] ray get_ray(int i, int j) const {
         // Get a randomly sampled camera ray for the pixel at location i,j.
 
         auto pixel_center = pixel00_loc + (i * pixel_delta_u) + (j * pixel_delta_v);
@@ -116,10 +144,10 @@ private:
         auto ray_origin = center;
         auto ray_direction = pixel_sample - ray_origin;
 
-        return ray(ray_origin, ray_direction);
+        return {ray_origin, ray_direction};
     }
 
-    vec3 pixel_sample_square() const {
+    [[nodiscard]] vec3 pixel_sample_square() const {
         // Returns a random point in the square surrounding a pixel at the origin.
         auto px = -0.5 + random_double();
         auto py = -0.5 + random_double();
