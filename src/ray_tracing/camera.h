@@ -55,7 +55,14 @@ public:
                         pixel_color += ray_color(r, world);
                     }
                 }
-                writeColor(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
+                if (this->useMaterial)
+                {
+                    writeColorGamma(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
+                }
+                else
+                {
+                    writeColor(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
+                }
             }
         }
     }
