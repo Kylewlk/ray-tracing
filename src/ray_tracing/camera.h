@@ -11,10 +11,18 @@
 
 class camera {
 public:
+    enum ShaderType : uint8_t
+    {
+        none,
+        diffuse,
+        material
+    };
+
     /* Public Camera Parameters Here */
 //    double aspect_ratio = 1.0;  // Ratio of image width over height
 //    int    image_width  = 100;  // Rendered image width in pixel count
-    bool useMaterial = false;
+
+    ShaderType type { none };
     int max_depth         = 10;   // Maximum number of ray bounces into scene
 
 
@@ -46,22 +54,23 @@ public:
                 color pixel_color(0,0,0);
                 for (int sample = 0; sample < samples_per_pixel; ++sample) {
                     ray r = get_ray(i, j);
-                    if (this->useMaterial)
-                    {
-                        pixel_color += ray_color(r, this->max_depth, world);
-                    }
-                    else
+                    if (this->type == none)
                     {
                         pixel_color += ray_color(r, world);
                     }
+                    else if (this->type == diffuse)
+                    {
+                        pixel_color += ray_color_diffuse(r, this->max_depth, world);
+                    }
                 }
-                if (this->useMaterial)
+                if (this->type == none)
                 {
-                    writeColorGamma(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
+                    writeColor(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
                 }
                 else
                 {
-                    writeColor(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
+                    writeColorGamma(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
+
                 }
             }
         }
@@ -124,7 +133,7 @@ private:
     }
 
 
-    [[nodiscard]] static color ray_color(const ray& r, int depth, const hittable& world) {
+    [[nodiscard]] static color ray_color_diffuse(const ray& r, int depth, const hittable& world) {
         hit_record rec;
 
         // If we've exceeded the ray bounce limit, no more light is gathered.
@@ -134,7 +143,7 @@ private:
         if (world.hit(r, interval(0.001, infinity), rec)) {
 //            vec3 direction = random_on_hemisphere(rec.normal);
             vec3 direction = rec.normal + random_unit_vector();
-            return 0.5 * ray_color(ray(rec.p, direction), depth - 1, world);
+            return 0.5 * ray_color_diffuse(ray(rec.p, direction), depth - 1, world);
         }
 
         vec3 unit_direction = unit_vector(r.direction());

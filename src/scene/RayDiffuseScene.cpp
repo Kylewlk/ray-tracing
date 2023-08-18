@@ -13,7 +13,7 @@
 RayDiffuseScene::RayDiffuseScene()
     : BaseScene(ID, 0, 0)
 {
-    this->cam.useMaterial = true;
+    this->cam.type = camera::diffuse;
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
