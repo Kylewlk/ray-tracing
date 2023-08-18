@@ -15,6 +15,7 @@ public:
     {
         none,
         diffuse,
+        diffuse_gamma,
         material
     };
 
@@ -58,12 +59,12 @@ public:
                     {
                         pixel_color += ray_color(r, world);
                     }
-                    else if (this->type == diffuse)
+                    else if (this->type == diffuse || this->type == diffuse_gamma)
                     {
                         pixel_color += ray_color_diffuse(r, this->max_depth, world);
                     }
                 }
-                if (this->type == none)
+                if (this->type == none || this->type == diffuse)
                 {
                     writeColor(pixelData.data(), imageWidth, i, j, samples_per_pixel, pixel_color);
                 }

@@ -13,7 +13,8 @@
 RayDiffuseScene::RayDiffuseScene()
     : BaseScene(ID, 0, 0)
 {
-    this->cam.type = camera::diffuse;
+    this->gamma = true;
+    this->cam.type = camera::diffuse_gamma;
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
@@ -58,4 +59,8 @@ void RayDiffuseScene::drawSpecificProperty()
 {
     ImGui::SliderInt("Sampler Count", &samplerPerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    if (ImGui::Checkbox("Gamma", &this->gamma))
+    {
+        this->cam.type = gamma ? camera::diffuse_gamma : camera::diffuse;
+    }
 }
