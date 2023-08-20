@@ -38,8 +38,19 @@ void RayMetalScene::renderImage()
 
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
     auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
-    auto material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
-    auto material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+    std::shared_ptr<metal> material_left;
+    std::shared_ptr<metal> material_right;
+    if (this->fuzzyReflection)
+    {
+        material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
+        material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+
+    }
+    else
+    {
+        material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.0);
+        material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
+    }
 
     world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
     world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
@@ -65,4 +76,5 @@ void RayMetalScene::drawSpecificProperty()
 {
     ImGui::SliderInt("Sampler Count", &samplerPerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::Checkbox("Fuzzy Reflection", &this->fuzzyReflection);
 }
