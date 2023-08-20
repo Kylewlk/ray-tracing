@@ -2,14 +2,14 @@
 // Created by wlk12 on 2023/8/7.
 //
 
-#include "RayMetalScene.h"
+#include "RayRefractionScene.h"
 #include "common/Texture.h"
 
 #include "ray_tracing/hittable_list.h"
 #include "ray_tracing/sphere.h"
 
 
-RayMetalScene::RayMetalScene()
+RayRefractionScene::RayRefractionScene()
     : BaseScene(ID, 0, 0)
 {
     this->cam.type = camera::material;
@@ -17,19 +17,19 @@ RayMetalScene::RayMetalScene()
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
     this->samplerPerPixel = 10;
-    RayMetalScene::renderImage();
+    RayRefractionScene::renderImage();
 }
 
-SceneRef RayMetalScene::create()
+SceneRef RayRefractionScene::create()
 {
-    struct enable_make_shared : public RayMetalScene
+    struct enable_make_shared : public RayRefractionScene
     {
-        enable_make_shared() : RayMetalScene() {}
+        enable_make_shared() : RayRefractionScene() {}
     };
     return std::make_shared<enable_make_shared>();
 }
 
-void RayMetalScene::renderImage()
+void RayRefractionScene::renderImage()
 {
     this->imageCurrentWidth = this->imageWidth;
     this->imageCurrentHeight = this->imageHeight;
@@ -37,19 +37,10 @@ void RayMetalScene::renderImage()
     hittable_list world;
 
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
-    auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
-    std::shared_ptr<metal> material_left;
-    std::shared_ptr<metal> material_right;
-    if (this->fuzzyReflection)
-    {
-        material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.3);
-        material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
-    }
-    else
-    {
-        material_left   = make_shared<metal>(color(0.8, 0.8, 0.8), 0.0);
-        material_right  = make_shared<metal>(color(0.8, 0.6, 0.2), 0.0);
-    }
+    auto material_center = make_shared<dielectric>(1.5);
+    auto material_left   = make_shared<dielectric>(1.5);
+    auto material_right = make_shared<metal>(color(0.8, 0.6, 0.2), 1.0);
+
 
     world.add(make_shared<sphere>(point3( 0.0, -100.5, -1.0), 100.0, material_ground));
     world.add(make_shared<sphere>(point3( 0.0,    0.0, -1.0),   0.5, material_center));
@@ -62,7 +53,7 @@ void RayMetalScene::renderImage()
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
 }
 
-void RayMetalScene::reset()
+void RayRefractionScene::reset()
 {
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
@@ -71,9 +62,8 @@ void RayMetalScene::reset()
     BaseScene::reset();
 }
 
-void RayMetalScene::drawSpecificProperty()
+void RayRefractionScene::drawSpecificProperty()
 {
     ImGui::SliderInt("Sampler Count", &samplerPerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
-    ImGui::Checkbox("Fuzzy Reflection", &this->fuzzyReflection);
 }
