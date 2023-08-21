@@ -53,8 +53,8 @@ void RayDefocusBlurScene::renderImage()
     cam.lookat   = point3(0,0,-1);
     cam.vup      = vec3(0,1,0);
 
-    cam.defocus_angle = this->defocusAngle;
-    cam.focus_dist    = this->focusDist;
+    cam.defocus_angle = this->defocusAngle; // default 10
+    cam.focus_dist    = this->focusDist; // default 3.4 -> distance ( 0, 0, -1) - (-2,2,1)
 
     this->cam.render(world, this->aspectRatio, imageWidth, samplerPerPixel, imagePixels);
 

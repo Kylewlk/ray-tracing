@@ -22,6 +22,7 @@
 #include "scene/RayRefractionScene.h"
 #include "scene/RayViewingScene.h"
 #include "scene/RayDefocusBlurScene.h"
+#include "scene/RayTracingScene.h"
 
 #define ADD_SCENE_MENU(scene) {scene::ID, &scene::create}
 
@@ -40,6 +41,7 @@ static struct{
     ADD_SCENE_MENU(RayRefractionScene),
     ADD_SCENE_MENU(RayViewingScene),
     ADD_SCENE_MENU(RayDefocusBlurScene),
+    ADD_SCENE_MENU(RayTracingScene),
 };
 static const int mainMenuCount = sizeof(mainMenus)/(sizeof (mainMenus[0]));
 
