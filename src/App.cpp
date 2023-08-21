@@ -11,41 +11,9 @@
 #include "backends/imgui_impl_glfw.h"
 #include "backends/imgui_impl_opengl3.h"
 
-#include "scene/PictureScene.hpp"
-#include "scene/CreateImageScene.hpp"
-#include "scene/RayBackgroundScene.h"
-#include "scene/RaySphereScene.h"
-#include "scene/RaySphereScene2.h"
-#include "scene/RayAntialiasingScene.h"
-#include "scene/RayDiffuseScene.h"
-#include "scene/RayMetalScene.h"
-#include "scene/RayRefractionScene.h"
-#include "scene/RayViewingScene.h"
-#include "scene/RayDefocusBlurScene.h"
-#include "scene/RayTracingScene.h"
 
-#define ADD_SCENE_MENU(scene) {scene::ID, &scene::create}
-
-static struct{
-    const char* name;
-    SceneRef (*function)();
-} mainMenus[]{
-    ADD_SCENE_MENU(PictureScene),
-    ADD_SCENE_MENU(CreateImageScene),
-    ADD_SCENE_MENU(RayBackgroundScene),
-    ADD_SCENE_MENU(RaySphereScene),
-    ADD_SCENE_MENU(RaySphereScene2),
-    ADD_SCENE_MENU(RayAntialiasingScene),
-    ADD_SCENE_MENU(RayDiffuseScene),
-    ADD_SCENE_MENU(RayMetalScene),
-    ADD_SCENE_MENU(RayRefractionScene),
-    ADD_SCENE_MENU(RayViewingScene),
-    ADD_SCENE_MENU(RayDefocusBlurScene),
-    ADD_SCENE_MENU(RayTracingScene),
-};
-static const int mainMenuCount = sizeof(mainMenus)/(sizeof (mainMenus[0]));
-
-#undef ADD_SCENE_MENU
+extern AppMenu mainMenus[];
+extern int mainMenuCount;
 
 void App::run()
 {

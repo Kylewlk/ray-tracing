@@ -3,7 +3,7 @@
 //
 #pragma once
 
-#include "Scene.hpp"
+#include "scene/Scene.hpp"
 
 class CreateImageScene;
 using CreateImageSceneRef = std::shared_ptr<CreateImageScene>;

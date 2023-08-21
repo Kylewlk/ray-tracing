@@ -8,12 +8,6 @@
 #include "common/MathHelp.h"
 #include "GLWindow.h"
 
-struct AppMenu
-{
-    const char* name;
-    SceneRef (*function)();
-};
-
 class App
 {
 public:
