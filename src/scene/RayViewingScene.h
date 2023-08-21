@@ -21,6 +21,7 @@ private:
     void drawSpecificProperty() override;
 
     class camera cam;
+    int fov = 90;
 };
 
 
