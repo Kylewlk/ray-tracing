@@ -2,7 +2,7 @@
 // Created by wlk12 on 2023/8/6.
 //
 
-#include "CreateImageScene.h"
+#include "01CreateImageScene.h"
 #include "common/Texture.h"
 #include "common/Shader.h"
 #include "common/FrameBuffer.h"

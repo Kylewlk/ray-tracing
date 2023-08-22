@@ -2,34 +2,30 @@
 // Created by wlk12 on 2023/8/7.
 //
 
-#include "RaySphereScene.h"
+#include "04RayBackgroundScene.h"
 #include "common/Texture.h"
+#include "ray_tracing/vec3.h"
+#include "ray_tracing/ray.h"
 
-#include "ray_tracing/rtweekend.h"
-#include "ray_tracing/hittable.h"
-#include "ray_tracing/hittable_list.h"
-#include "ray_tracing/sphere.h"
-
-
-RaySphereScene::RaySphereScene()
+RayBackgroundScene::RayBackgroundScene()
     : BaseScene(ID, 0, 0)
 {
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    RaySphereScene::renderImage();
+    RayBackgroundScene::renderImage();
 }
 
-SceneRef RaySphereScene::create()
+SceneRef RayBackgroundScene::create()
 {
-    struct enable_make_shared : public RaySphereScene
+    struct enable_make_shared : public RayBackgroundScene
     {
-        enable_make_shared() : RaySphereScene() {}
+        enable_make_shared() : RayBackgroundScene() {}
     };
     return std::make_shared<enable_make_shared>();
 }
 
-void RaySphereScene::renderImage()
+void RayBackgroundScene::renderImage()
 {
     this->imageCurrentWidth = this->imageWidth;
     this->imageCurrentHeight = this->imageHeight;
@@ -57,10 +53,6 @@ void RaySphereScene::renderImage()
                                - vec3(0, 0, focal_length) - viewport_u/2 - viewport_v/2;
     auto pixel00_loc = viewport_upper_left + 0.5 * (pixel_delta_u + pixel_delta_v);
 
-    hittable_list world;
-
-    world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
-
     // Render
     for (int j = 0; j < imageHeight; ++j) {
         for (int i = 0; i < imageWidth; ++i) {
@@ -68,7 +60,7 @@ void RaySphereScene::renderImage()
             auto ray_direction = pixel_center - camera_center;
             ray r(camera_center, ray_direction);
 
-            color pixel_color = rayColor(r, world);
+            color pixel_color = rayColor(r);
             writeColor(imagePixels.data(), imageWidth, i, j, pixel_color);
         }
     }
@@ -78,22 +70,15 @@ void RaySphereScene::renderImage()
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
 }
 
-void RaySphereScene::reset()
+void RayBackgroundScene::reset()
 {
-    this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
-    this->imageHeight = int(double(imageWidth)/aspectRatio);
+    this->imageHeight = 400;
     BaseScene::reset();
 }
 
-color RaySphereScene::rayColor(const ray& r, const hittable& world)
+color RayBackgroundScene::rayColor(const ray& r)
 {
-    hit_record rec;
-    if (world.hit(r, interval(0, infinity), rec)) {
-        return 0.5 * (rec.normal + color(1,1,1));
-    }
-
-
     vec3 unit_direction = unit_vector(r.direction());
     auto a = 0.5*(unit_direction.y() + 1.0);
     return (1.0-a)*color(1.0, 1.0, 1.0) + a*color(0.5, 0.7, 1.0);

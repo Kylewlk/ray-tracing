@@ -2,7 +2,7 @@
 // Created by wlk12 on 2023/8/7.
 //
 
-#include "RayTracingScene.h"
+#include "14RayTracingScene.h"
 #include "common/Texture.h"
 
 #include "ray_tracing/hittable_list.h"
@@ -14,11 +14,11 @@ RayTracingScene::RayTracingScene()
 {
     this->cam.type = camera::material;
     this->cam.vfov = 45;
-    this->cam.max_depth = 30;
+    this->cam.max_depth = 10;
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 800;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 20;
+    this->samplerPerPixel = 1;
     RayTracingScene::renderImage();
 }
 

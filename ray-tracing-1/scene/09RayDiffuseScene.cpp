@@ -2,7 +2,7 @@
 // Created by wlk12 on 2023/8/7.
 //
 
-#include "RayDiffuseScene.h"
+#include "09RayDiffuseScene.h"
 #include "common/Texture.h"
 
 #include "ray_tracing/rtweekend.h"
