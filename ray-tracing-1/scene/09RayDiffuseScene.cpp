@@ -18,7 +18,7 @@ RayDiffuseScene::RayDiffuseScene()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 10;
+    this->samplePerPixel = 10;
     RayDiffuseScene::renderImage();
 }
 
@@ -40,7 +40,7 @@ void RayDiffuseScene::renderImage()
     world.add(make_shared<sphere>(point3(0,0,-1), 0.5));
     world.add(make_shared<sphere>(point3(0,-100.5,-1), 100));
 
-    this->cam.render(world, this->aspectRatio, imageWidth, samplerPerPixel, imagePixels);
+    this->cam.render(world, this->aspectRatio, imageWidth, samplePerPixel, imagePixels);
 
     this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
@@ -51,13 +51,13 @@ void RayDiffuseScene::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 10;
+    this->samplePerPixel = 10;
     BaseScene::reset();
 }
 
 void RayDiffuseScene::drawSpecificProperty()
 {
-    ImGui::SliderInt("Sampler Count", &samplerPerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     if (ImGui::Checkbox("Gamma", &this->gamma))
     {

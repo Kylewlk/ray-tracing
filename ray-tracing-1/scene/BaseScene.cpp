@@ -54,7 +54,7 @@ void BaseScene::drawProperty()
     ImGui::Begin(Scene::PropertyWindow, &showPropertyWindow, ImGuiWindowFlags_NoCollapse);
     ImGui::SetWindowSize({300, 400}, ImGuiCond_FirstUseEver);
 
-    ImGui::Text("Image Size: %d, %d, sampler: %d", this->imageCurrentWidth, this->imageCurrentHeight, this->samplerPerPixel);
+    ImGui::Text("Image Size: %d, %d, sampler: %d", this->imageCurrentWidth, this->imageCurrentHeight, this->sampleCurrentCount);
     ImGui::Separator();
 
     if (ImGui::Button("Reset", {100.0f, 0}))
@@ -102,7 +102,7 @@ void BaseScene::drawProperty()
 
     ImGui::Separator();
 
-    if (ImGui::Button("render", {100.0f, 0}))
+    if (ImGui::Button(isRendering ? "stop rendering" : "render", {100.0f, 0}))
     {
         LOGI("Render, {}", this->name);
         this->renderImage();

@@ -16,7 +16,7 @@ RayMetalScene::RayMetalScene()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 10;
+    this->samplePerPixel = 10;
     RayMetalScene::renderImage();
 }
 
@@ -56,7 +56,7 @@ void RayMetalScene::renderImage()
     world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
     world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
 
-    this->cam.render(world, this->aspectRatio, imageWidth, samplerPerPixel, imagePixels);
+    this->cam.render(world, this->aspectRatio, imageWidth, samplePerPixel, imagePixels);
 
     this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
@@ -67,13 +67,13 @@ void RayMetalScene::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 10;
+    this->samplePerPixel = 10;
     BaseScene::reset();
 }
 
 void RayMetalScene::drawSpecificProperty()
 {
-    ImGui::SliderInt("Sampler Count", &samplerPerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::Checkbox("Fuzzy Reflection", &this->fuzzyReflection);
 }

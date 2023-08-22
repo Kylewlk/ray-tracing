@@ -17,7 +17,7 @@ RayViewingScene::RayViewingScene()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 10;
+    this->samplePerPixel = 10;
     RayViewingScene::renderImage();
 }
 
@@ -53,7 +53,7 @@ void RayViewingScene::renderImage()
     cam.lookat   = point3(0,0,-1);
     cam.vup      = vec3(0,1,0);
 
-    this->cam.render(world, this->aspectRatio, imageWidth, samplerPerPixel, imagePixels);
+    this->cam.render(world, this->aspectRatio, imageWidth, samplePerPixel, imagePixels);
 
     this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
@@ -64,13 +64,13 @@ void RayViewingScene::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 10;
+    this->samplePerPixel = 10;
     BaseScene::reset();
 }
 
 void RayViewingScene::drawSpecificProperty()
 {
-    ImGui::SliderInt("Sampler Count", &samplerPerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Fov", &this->fov, 10, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
 }

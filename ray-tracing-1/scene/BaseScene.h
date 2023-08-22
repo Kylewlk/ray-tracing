@@ -37,10 +37,11 @@ protected:
     std::vector<uint8_t> imagePixels;
     int imageCurrentWidth = 256;
     int imageCurrentHeight = 256;
+    int sampleCurrentCount = 0;
+    int samplePerPixel = 1;
     int imageWidth = 256;
     int imageHeight = 256;
     double aspectRatio = 1.0;
-    int samplerPerPixel = 1;
 
     TextureRef texture;
     ShaderRef shader;
@@ -50,5 +51,6 @@ protected:
     bool holdLeftButton{false};
 
     bool lockAspectRatio{true};
+    bool isRendering{false};
 };
 

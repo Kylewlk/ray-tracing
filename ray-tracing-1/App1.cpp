@@ -26,12 +26,12 @@ AppMenu mainMenus[]{
     ADD_SCENE_MENU(RaySphereScene),
     ADD_SCENE_MENU(RaySphereScene2),
     ADD_SCENE_MENU(RayAntialiasingScene),
-    ADD_SCENE_MENU(RayDiffuseScene),
-    ADD_SCENE_MENU(RayMetalScene),
-    ADD_SCENE_MENU(RayRefractionScene),
-    ADD_SCENE_MENU(RayViewingScene),
-    ADD_SCENE_MENU(RayDefocusBlurScene),
-    ADD_SCENE_MENU(RayTracingScene),
+//    ADD_SCENE_MENU(RayDiffuseScene),
+//    ADD_SCENE_MENU(RayMetalScene),
+//    ADD_SCENE_MENU(RayRefractionScene),
+//    ADD_SCENE_MENU(RayViewingScene),
+//    ADD_SCENE_MENU(RayDefocusBlurScene),
+//    ADD_SCENE_MENU(RayTracingScene),
 };
 int mainMenuCount = sizeof(mainMenus)/(sizeof (mainMenus[0]));
 

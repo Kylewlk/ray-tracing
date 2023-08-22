@@ -18,7 +18,7 @@ RayTracingScene::RayTracingScene()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 800;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 1;
+    this->samplePerPixel = 1;
     RayTracingScene::renderImage();
 }
 
@@ -87,7 +87,7 @@ void RayTracingScene::renderImage()
     cam.defocus_angle = 0.6;
     cam.focus_dist    = 10.0;
 
-    this->cam.render(world, this->aspectRatio, imageWidth, samplerPerPixel, imagePixels);
+    this->cam.render(world, this->aspectRatio, imageWidth, samplePerPixel, imagePixels);
 
     this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
     this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
@@ -98,13 +98,13 @@ void RayTracingScene::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplerPerPixel = 10;
+    this->samplePerPixel = 10;
     BaseScene::reset();
 }
 
 void RayTracingScene::drawSpecificProperty()
 {
-    ImGui::SliderInt("Sampler Count", &samplerPerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderFloat("Defocus Angle", &this->defocusAngle, 0, 50, "%.3f", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderFloat("Focus", &this->focusDist, 1, 20, "%.3f", ImGuiSliderFlags_AlwaysClamp);
