@@ -32,7 +32,9 @@ public:
 
 
     void render(const hittable& world, double aspectRatio, int imageWidth, std::vector<uint8_t>& pixelData) {
-        initialize(aspectRatio, imageWidth, 1, pixelData);
+        initialize(aspectRatio, imageWidth, 1);
+        pixelData.clear();
+        pixelData.resize(image_width * image_height * 3);
 
         std::cout << "Image Size: " << image_width << ' ' << image_height << std::endl;
 
@@ -50,7 +52,9 @@ public:
     }
 
     void render(const hittable& world, double aspectRatio, int imageWidth, int samplesPerPixel, std::vector<uint8_t>& pixelData) {
-        initialize(aspectRatio, imageWidth, samplesPerPixel, pixelData);
+        initialize(aspectRatio, imageWidth, samplesPerPixel);
+        pixelData.clear();
+        pixelData.resize(image_width * image_height * 3);
 
         std::cout << "Image Size: " << image_width << ' ' << image_height << std::endl;
 
@@ -85,6 +89,40 @@ public:
         }
     }
 
+    void renderAsync(const hittable& world, double aspectRatio, int imageWidth, std::vector<color>& pixelData) {
+        initialize(aspectRatio, imageWidth, 1);
+        pixelData.clear();
+        pixelData.resize(image_width * image_height);
+        auto data = pixelData.data();
+        std::cout << "Image Size: " << image_width << ' ' << image_height << std::endl;
+
+        auto renderOneLine = [this, data, &world](int j){
+            for (int i = 0; i < image_width; ++i) {
+                color pixel_color(0,0,0);
+
+                ray r = get_ray(i, j);
+                if (this->type == none)
+                {
+                    pixel_color += ray_color(r, world);
+                }
+                else if (this->type == diffuse || this->type == diffuse_gamma)
+                {
+                    pixel_color += ray_color_diffuse(r, this->max_depth, world);
+                }
+                else if (this->type == material)
+                {
+                    pixel_color += ray_color_material(r, this->max_depth, world);
+                }
+
+                data[image_width * j + i] = pixel_color;
+            }
+        };
+
+        for (int j = 0; j < image_height; ++j) {
+            renderOneLine(j);
+        }
+    }
+
 private:
     /* Private Camera Variables Here */
     double aspect_ratio = 1.0;  // Ratio of image width over height
@@ -100,16 +138,13 @@ private:
     vec3   defocus_disk_u;  // Defocus disk horizontal radius
     vec3   defocus_disk_v;  // Defocus disk vertical radius
 
-    void initialize(double aspectRatio, int imageWidth, int samplesPerPixel, std::vector<uint8_t>& pixelData) {
+    void initialize(double aspectRatio, int imageWidth, int samplesPerPixel) {
         this->aspect_ratio = aspectRatio;
         this->image_width = imageWidth;
         this->samples_per_pixel = samplesPerPixel;
 
         image_height = static_cast<int>(image_width / aspect_ratio);
         image_height = (image_height < 1) ? 1 : image_height;
-
-        pixelData.clear();
-        pixelData.resize(image_width * image_height * 3);
 
         center = lookfrom;
 

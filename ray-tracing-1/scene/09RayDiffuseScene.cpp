@@ -4,6 +4,7 @@
 
 #include "09RayDiffuseScene.h"
 #include "common/Texture.h"
+#include "camera/Camera2D.h"
 
 #include "ray_tracing/rtweekend.h"
 #include "ray_tracing/hittable_list.h"
@@ -52,7 +53,7 @@ void RayDiffuseScene::reset()
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
     this->samplePerPixel = 10;
-    BaseScene::reset();
+    this->camera->resetView();
 }
 
 void RayDiffuseScene::drawSpecificProperty()

@@ -4,6 +4,8 @@
 
 #include "04RayBackgroundScene.h"
 #include "common/Texture.h"
+#include "camera/Camera2D.h"
+
 #include "ray_tracing/vec3.h"
 #include "ray_tracing/ray.h"
 
@@ -74,7 +76,7 @@ void RayBackgroundScene::reset()
 {
     this->imageWidth = 400;
     this->imageHeight = 400;
-    BaseScene::reset();
+    this->camera->resetView();
 }
 
 color RayBackgroundScene::rayColor(const ray& r)

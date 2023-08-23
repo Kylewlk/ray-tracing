@@ -5,14 +5,11 @@
 #pragma once
 #include "BaseScene.h"
 #include "ray_tracing/camera.h"
-#include <future>
 
 class RayAntialiasingScene : public BaseScene
 {
 public:
     static constexpr const char* ID = "Ray Antialiasing";
-
-    ~RayAntialiasingScene() override;
 
     static SceneRef create();
 
@@ -24,10 +21,6 @@ private:
     void drawSpecificProperty() override;
 
     class camera cam;
-
-    static constexpr int threadCount = 6;
-    std::future<bool> renderResult[threadCount];
-    std::atomic<bool> rendering[threadCount];
 };
 
 

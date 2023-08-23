@@ -4,12 +4,11 @@
 
 #include "06RaySphereScene2.h"
 #include "common/Texture.h"
+#include "camera/Camera2D.h"
 
 #include "ray_tracing/rtweekend.h"
-#include "ray_tracing/hittable.h"
 #include "ray_tracing/hittable_list.h"
 #include "ray_tracing/sphere.h"
-
 
 RaySphereScene2::RaySphereScene2()
     : BaseScene(ID, 0, 0)
@@ -49,5 +48,5 @@ void RaySphereScene2::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    BaseScene::reset();
+    this->camera->resetView();
 }

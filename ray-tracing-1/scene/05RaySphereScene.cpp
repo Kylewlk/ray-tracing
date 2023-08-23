@@ -4,6 +4,7 @@
 
 #include "05RaySphereScene.h"
 #include "common/Texture.h"
+#include "camera/Camera2D.h"
 
 #include "ray_tracing/rtweekend.h"
 #include "ray_tracing/hittable.h"
@@ -83,7 +84,7 @@ void RaySphereScene::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    BaseScene::reset();
+    this->camera->resetView();
 }
 
 color RaySphereScene::rayColor(const ray& r, const hittable& world)
