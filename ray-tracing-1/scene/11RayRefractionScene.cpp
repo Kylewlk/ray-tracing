@@ -56,6 +56,7 @@ void RayRefractionScene::renderImage()
     if (this->isRendering)
     {
         this->isRendering = false;
+        this->running = false;
     }
     else
     {
@@ -64,6 +65,7 @@ void RayRefractionScene::renderImage()
         this->imageCurrentWidth = this->imageWidth;
         this->imageCurrentHeight = this->imageHeight;
         this->isRendering = true;
+        this->running = true;
     }
 }
 
@@ -84,11 +86,12 @@ void RayRefractionScene::draw()
         {
             if (this->sampleCurrentCount < this->samplePerPixel)
             {
-                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel);
+                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel, this->running);
             }
             else
             {
                 this->isRendering = false;
+                this->running = false;
             }
         }
     }

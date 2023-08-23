@@ -90,7 +90,7 @@ public:
         }
     }
 
-    std::future<bool> renderAsync(const hittable& world, double aspectRatio, int imageWidth, std::vector<color>& pixelData) {
+    std::future<bool> renderAsync(const hittable& world, double aspectRatio, int imageWidth, std::vector<color>& pixelData, std::atomic<bool>& running) {
         initialize(aspectRatio, imageWidth, 1);
         pixelData.clear();
         pixelData.resize(image_width * image_height);
@@ -117,9 +117,12 @@ public:
                 data[image_width * j + i] = pixel_color;
             }
         };
-        auto result = std::async(std::launch::async, [this, renderOneLine](){
+        auto result = std::async(std::launch::async, [this, renderOneLine, &running](){
             for (int j = 0; j < image_height; ++j) {
-                renderOneLine(j);
+                if (running)
+                {
+                    renderOneLine(j);
+                }
             }
             return true;
         });

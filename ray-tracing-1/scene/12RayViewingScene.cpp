@@ -56,6 +56,7 @@ void RayViewingScene::renderImage()
     if (this->isRendering)
     {
         this->isRendering = false;
+        this->running = false;
     }
     else
     {
@@ -71,6 +72,7 @@ void RayViewingScene::renderImage()
         cam.vup      = vec3(0,1,0);
 
         this->isRendering = true;
+        this->running = true;
     }
 }
 
@@ -93,11 +95,12 @@ void RayViewingScene::draw()
         {
             if (this->sampleCurrentCount < this->samplePerPixel)
             {
-                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel);
+                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel, this->running);
             }
             else
             {
                 this->isRendering = false;
+                this->running = false;
             }
         }
     }

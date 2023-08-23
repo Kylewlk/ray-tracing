@@ -56,6 +56,7 @@ void RayDefocusBlurScene::renderImage()
     if (this->isRendering)
     {
         this->isRendering = false;
+        this->running = false;
     }
     else
     {
@@ -73,6 +74,7 @@ void RayDefocusBlurScene::renderImage()
         cam.focus_dist    = this->focusDist; // default 3.4 -> distance ( 0, 0, -1) - (-2,2,1)
 
         this->isRendering = true;
+        this->running = true;
     }
 }
 
@@ -94,11 +96,12 @@ void RayDefocusBlurScene::draw()
         {
             if (this->sampleCurrentCount < this->samplePerPixel)
             {
-                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel);
+                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel, this->running);
             }
             else
             {
                 this->isRendering = false;
+                this->running = false;
             }
         }
     }
