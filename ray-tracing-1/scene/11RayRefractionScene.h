@@ -5,11 +5,14 @@
 #pragma once
 #include "BaseScene.h"
 #include "ray_tracing/camera.h"
+#include "ray_tracing/hittable_list.h"
 
 class RayRefractionScene : public BaseScene
 {
 public:
     static constexpr const char* ID = "Ray Refraction";
+
+    ~RayRefractionScene() override;
 
     static SceneRef create();
 
@@ -19,6 +22,9 @@ private:
     RayRefractionScene();
     void reset() override;
     void drawSpecificProperty() override;
+    void draw() override;
+
+    hittable_list world;
 
     class camera cam;
 };

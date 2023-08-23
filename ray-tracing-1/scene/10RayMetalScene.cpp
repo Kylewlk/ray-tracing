@@ -5,7 +5,6 @@
 #include "10RayMetalScene.h"
 #include "common/Texture.h"
 
-#include "ray_tracing/hittable_list.h"
 #include "ray_tracing/sphere.h"
 
 
@@ -16,25 +15,7 @@ RayMetalScene::RayMetalScene()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplePerPixel = 10;
-    RayMetalScene::renderImage();
-}
-
-SceneRef RayMetalScene::create()
-{
-    struct enable_make_shared : public RayMetalScene
-    {
-        enable_make_shared() : RayMetalScene() {}
-    };
-    return std::make_shared<enable_make_shared>();
-}
-
-void RayMetalScene::renderImage()
-{
-    this->imageCurrentWidth = this->imageWidth;
-    this->imageCurrentHeight = this->imageHeight;
-
-    hittable_list world;
+    this->samplePerPixel = 20;
 
     auto material_ground = make_shared<lambertian>(color(0.8, 0.8, 0.0));
     auto material_center = make_shared<lambertian>(color(0.7, 0.3, 0.3));
@@ -56,10 +37,43 @@ void RayMetalScene::renderImage()
     world.add(make_shared<sphere>(point3(-1.0,    0.0, -1.0),   0.5, material_left));
     world.add(make_shared<sphere>(point3( 1.0,    0.0, -1.0),   0.5, material_right));
 
-    this->cam.render(world, this->aspectRatio, imageWidth, samplePerPixel, imagePixels);
 
-    this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
-    this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
+    RayMetalScene::renderImage();
+}
+
+RayMetalScene::~RayMetalScene()
+{
+    this->isRendering = false;
+    this->running = false;
+    if (this->renderResult.valid())
+    {
+        this->renderResult.get();
+    }
+}
+
+SceneRef RayMetalScene::create()
+{
+    struct enable_make_shared : public RayMetalScene
+    {
+        enable_make_shared() : RayMetalScene() {}
+    };
+    return std::make_shared<enable_make_shared>();
+}
+
+void RayMetalScene::renderImage()
+{
+    if (this->isRendering)
+    {
+        this->isRendering = false;
+    }
+    else
+    {
+        BaseScene::reset();
+
+        this->imageCurrentWidth = this->imageWidth;
+        this->imageCurrentHeight = this->imageHeight;
+        this->isRendering = true;
+    }
 }
 
 void RayMetalScene::reset()
@@ -67,13 +81,43 @@ void RayMetalScene::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplePerPixel = 10;
+    this->samplePerPixel = 20;
     BaseScene::reset();
+}
+
+void RayMetalScene::draw()
+{
+    if (!this->renderResult.valid())
+    {
+        if (this->isRendering)
+        {
+            if (this->sampleCurrentCount < this->samplePerPixel)
+            {
+                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel);
+            }
+            else
+            {
+                this->isRendering = false;
+            }
+        }
+    }
+    else
+    {
+        if(this->renderResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+        {
+            if (this->renderResult.get())
+            {
+                this->updateImage();
+            }
+        }
+    }
+
+    BaseScene::draw();
 }
 
 void RayMetalScene::drawSpecificProperty()
 {
-    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 1000, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::Checkbox("Fuzzy Reflection", &this->fuzzyReflection);
 }

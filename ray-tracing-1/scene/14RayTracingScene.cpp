@@ -13,30 +13,11 @@ RayTracingScene::RayTracingScene()
     : BaseScene(ID, 0, 0)
 {
     this->cam.type = camera::material;
-    this->cam.vfov = 45;
     this->cam.max_depth = 10;
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 800;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplePerPixel = 1;
-    RayTracingScene::renderImage();
-}
-
-SceneRef RayTracingScene::create()
-{
-    struct enable_make_shared : public RayTracingScene
-    {
-        enable_make_shared() : RayTracingScene() {}
-    };
-    return std::make_shared<enable_make_shared>();
-}
-
-void RayTracingScene::renderImage()
-{
-    this->imageCurrentWidth = this->imageWidth;
-    this->imageCurrentHeight = this->imageHeight;
-
-    hittable_list world;
+    this->samplePerPixel = 20;
 
     auto ground_material = make_shared<lambertian>(color(0.5, 0.5, 0.5));
     world.add(make_shared<sphere>(point3(0,-1000,0), 1000, ground_material));
@@ -79,18 +60,51 @@ void RayTracingScene::renderImage()
     world.add(make_shared<sphere>(point3(4, 1, 0), 1.0, material3));
 
 
-    cam.vfov     = 20;
-    cam.lookfrom = point3(13,2,3);
-    cam.lookat   = point3(0,0,0);
-    cam.vup      = vec3(0,1,0);
+    RayTracingScene::renderImage();
+}
 
-    cam.defocus_angle = 0.6;
-    cam.focus_dist    = 10.0;
+RayTracingScene::~RayTracingScene()
+{
+    this->isRendering = false;
+    this->running = false;
+    if (this->renderResult.valid())
+    {
+        this->renderResult.get();
+    }
+}
 
-    this->cam.render(world, this->aspectRatio, imageWidth, samplePerPixel, imagePixels);
+SceneRef RayTracingScene::create()
+{
+    struct enable_make_shared : public RayTracingScene
+    {
+        enable_make_shared() : RayTracingScene() {}
+    };
+    return std::make_shared<enable_make_shared>();
+}
 
-    this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
-    this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
+void RayTracingScene::renderImage()
+{
+    if (this->isRendering)
+    {
+        this->isRendering = false;
+    }
+    else
+    {
+        BaseScene::reset();
+
+        this->imageCurrentWidth = this->imageWidth;
+        this->imageCurrentHeight = this->imageHeight;
+
+        cam.vfov     = 20;
+        cam.lookfrom = point3(13,2,3);
+        cam.lookat   = point3(0,0,0);
+        cam.vup      = vec3(0,1,0);
+
+        cam.defocus_angle = 0.6;
+        cam.focus_dist    = 10.0;
+
+        this->isRendering = true;
+    }
 }
 
 void RayTracingScene::reset()
@@ -98,13 +112,45 @@ void RayTracingScene::reset()
     this->aspectRatio = 16.0 / 9.0;
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
-    this->samplePerPixel = 10;
+    this->samplePerPixel = 20;
+    this->fov = 20;
+
     BaseScene::reset();
+}
+
+void RayTracingScene::draw()
+{
+    if (!this->renderResult.valid())
+    {
+        if (this->isRendering)
+        {
+            if (this->sampleCurrentCount < this->samplePerPixel)
+            {
+                this->renderResult = this->cam.renderAsync(world, this->aspectRatio, imageWidth, renderingPixel);
+            }
+            else
+            {
+                this->isRendering = false;
+            }
+        }
+    }
+    else
+    {
+        if(this->renderResult.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready)
+        {
+            if (this->renderResult.get())
+            {
+                this->updateImage();
+            }
+        }
+    }
+
+    BaseScene::draw();
 }
 
 void RayTracingScene::drawSpecificProperty()
 {
-    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
+    ImGui::SliderInt("Sampler Count", &samplePerPixel, 1, 1000, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderInt("Ray Max Depth", &this->cam.max_depth, 1, 100, "%d", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderFloat("Defocus Angle", &this->defocusAngle, 0, 50, "%.3f", ImGuiSliderFlags_AlwaysClamp);
     ImGui::SliderFloat("Focus", &this->focusDist, 1, 20, "%.3f", ImGuiSliderFlags_AlwaysClamp);

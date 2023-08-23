@@ -4,6 +4,8 @@
 #pragma once
 
 #include "scene/Scene.hpp"
+#include <future>
+#include "ray_tracing/rtweekend.h"
 
 class BaseScene;
 using BaseSceneRef = std::shared_ptr<BaseScene>;
@@ -33,6 +35,7 @@ protected:
     void drawProperty() override;
     virtual void reset();
     virtual void drawSpecificProperty();
+    void updateImage();
 
     std::vector<uint8_t> imagePixels;
     int imageCurrentWidth = 256;
@@ -42,6 +45,11 @@ protected:
     int imageWidth = 256;
     int imageHeight = 256;
     double aspectRatio = 1.0;
+
+    std::future<bool> renderResult;
+    std::atomic<bool> running{false};
+    std::vector<color> pixelCache;
+    std::vector<color> renderingPixel;
 
     TextureRef texture;
     ShaderRef shader;

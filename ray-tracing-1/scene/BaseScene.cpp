@@ -2,6 +2,7 @@
 // Created by wlk12 on 2023/8/7.
 //
 
+#include <imgui_internal.h>
 #include "BaseScene.h"
 #include "common/Texture.h"
 #include "common/Shader.h"
@@ -57,6 +58,12 @@ void BaseScene::drawProperty()
     ImGui::Text("Image Size: %d, %d, sampler: %d", this->imageCurrentWidth, this->imageCurrentHeight, this->sampleCurrentCount);
     ImGui::Separator();
 
+    if ( this->isRendering)
+    {
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+        ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
+    }
+
     if (ImGui::Button("Reset", {100.0f, 0}))
     {
         this->reset();
@@ -99,6 +106,12 @@ void BaseScene::drawProperty()
     }
 
     this->drawSpecificProperty();
+
+    if ( this->isRendering)
+    {
+        ImGui::PopItemFlag();
+        ImGui::PopStyleVar();
+    }
 
     ImGui::Separator();
 
@@ -156,6 +169,12 @@ void BaseScene::onMouseEvent(const MouseEvent* e)
 
 void BaseScene::reset()
 {
+    this->sampleCurrentCount = 0;
+    this->imageCurrentWidth = 0;
+    this->imageCurrentHeight = 0;
+    this->pixelCache.clear();
+    this->texture.reset();
+
     this->camera->resetView();
 }
 
@@ -164,3 +183,33 @@ void BaseScene::drawSpecificProperty()
 
 }
 
+void BaseScene::updateImage()
+{
+    if (this->renderingPixel.size() != this->pixelCache.size())
+    {
+        this->pixelCache.clear();
+        this->pixelCache.resize(this->renderingPixel.size());
+    }
+    this->imagePixels.clear();
+    this->imagePixels.resize(this->pixelCache.size() * 3);
+    this->sampleCurrentCount += 1;
+    static const interval intensity(0.000, 0.999);
+
+    double scale = 1.0 / double(this->sampleCurrentCount);
+    for (int i = 0; i < this->renderingPixel.size(); ++i)
+    {
+        this->pixelCache[i] = this->pixelCache[i] + this->renderingPixel[i];
+        auto pixel_color = this->pixelCache[i]  * scale;
+
+        // Write the translated [0,255] value of each color component.
+        imagePixels[i * 3 + 0] = static_cast<uint8_t>(255.999 * intensity.clamp(linear_to_gamma(pixel_color.x())));
+        imagePixels[i * 3 + 1] = static_cast<uint8_t>(255.999 * intensity.clamp(linear_to_gamma(pixel_color.y())));
+        imagePixels[i * 3 + 2] = static_cast<uint8_t>(255.999 * intensity.clamp(linear_to_gamma(pixel_color.z())));
+    }
+
+    if (this->texture == nullptr || this->texture->getWidth() != imageWidth || this->texture->getHeight() != imageHeight)
+    {
+        this->texture = Texture::create(GL_RGB8, imageWidth, imageHeight);
+    }
+    this->texture->update(0, 0, imageWidth, imageHeight, GL_RGB, GL_UNSIGNED_BYTE, this->imagePixels.data());
+}

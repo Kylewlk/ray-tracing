@@ -4,6 +4,7 @@
 
 #pragma once
 
+#include <future>
 #include "hittable.h"
 #include "material.h"
 
@@ -89,12 +90,11 @@ public:
         }
     }
 
-    void renderAsync(const hittable& world, double aspectRatio, int imageWidth, std::vector<color>& pixelData) {
+    std::future<bool> renderAsync(const hittable& world, double aspectRatio, int imageWidth, std::vector<color>& pixelData) {
         initialize(aspectRatio, imageWidth, 1);
         pixelData.clear();
         pixelData.resize(image_width * image_height);
         auto data = pixelData.data();
-        std::cout << "Image Size: " << image_width << ' ' << image_height << std::endl;
 
         auto renderOneLine = [this, data, &world](int j){
             for (int i = 0; i < image_width; ++i) {
@@ -117,10 +117,13 @@ public:
                 data[image_width * j + i] = pixel_color;
             }
         };
-
-        for (int j = 0; j < image_height; ++j) {
-            renderOneLine(j);
-        }
+        auto result = std::async(std::launch::async, [this, renderOneLine](){
+            for (int j = 0; j < image_height; ++j) {
+                renderOneLine(j);
+            }
+            return true;
+        });
+        return result;
     }
 
 private:
