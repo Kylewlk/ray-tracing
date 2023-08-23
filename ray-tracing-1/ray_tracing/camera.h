@@ -118,13 +118,39 @@ public:
             }
         };
         auto result = std::async(std::launch::async, [this, renderOneLine, &running](){
-            for (int j = 0; j < image_height; ++j) {
+
+            constexpr int threadCount = 8;
+            std::future<void> futures[threadCount];
+            int lineCount = image_height / threadCount;
+            for (int i = 0; i < threadCount; ++i)
+            {
+                futures[i] = std::async([start=i*lineCount, end = (i + 1) * lineCount, renderOneLine, &running](){
+                    for (int j = start; j < end; ++j) {
+                        if (running)
+                        {
+                            renderOneLine(j);
+                        }
+                    }
+                });
+            }
+
+            for (int j = lineCount * threadCount; j < image_height; ++j) {
                 if (running)
                 {
                     renderOneLine(j);
                 }
             }
-            return true;
+
+            for (auto& f : futures)
+            {
+                f.get();
+            }
+            if (running)
+            {
+                return true;
+                running = false;
+            }
+            return false;
         });
         return result;
     }
