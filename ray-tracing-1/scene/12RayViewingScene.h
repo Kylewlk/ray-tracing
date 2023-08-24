@@ -27,7 +27,7 @@ private:
     hittable_list world;
 
     class camera cam;
-    int fov = 45;
+    int fov = 60;
 };
 
 

@@ -148,7 +148,6 @@ public:
             if (running)
             {
                 return true;
-                running = false;
             }
             return false;
         });

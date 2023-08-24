@@ -82,7 +82,7 @@ void RayViewingScene::reset()
     this->imageWidth = 400;
     this->imageHeight = int(double(imageWidth)/aspectRatio);
     this->samplePerPixel = 20;
-    this->fov = 45;
+    this->fov = 60;
 
     BaseScene::reset();
 }
