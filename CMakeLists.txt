@@ -11,7 +11,6 @@ function(setup_app app)
     target_link_libraries(${app} ray-tracing-libs)
 
     target_include_directories(${app} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/src)
-    target_include_directories(${app} PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ray-tracing-1)
 
     target_compile_options(${app} PRIVATE "$<$<CXX_COMPILER_ID:MSVC>:/utf-8>")
     target_compile_definitions(${app} PRIVATE CURRENT_WORKING_DIR="${CMAKE_CURRENT_SOURCE_DIR}")
@@ -20,11 +19,12 @@ endfunction()
 file(GLOB_RECURSE src_code LIST_DIRECTORIES false
         src/*.hpp src/*.h src/*.cpp src/*.c )
 
-file(GLOB_RECURSE app1_code LIST_DIRECTORIES false
+file(GLOB_RECURSE ray_tracing_1_code LIST_DIRECTORIES false
         ray-tracing-1/*.hpp ray-tracing-1/*.h
         ray-tracing-1/*.cpp ray-tracing-1/*.c )
 
-add_executable(app1 ${src_code} ${app1_code})
+add_executable(ray-tracing-1 ${src_code} ${ray_tracing_1_code})
 
-setup_app(app1)
+setup_app(ray-tracing-1)
+target_include_directories(ray-tracing-1 PRIVATE ${CMAKE_CURRENT_SOURCE_DIR}/ray-tracing-1)
 
