@@ -60,7 +60,7 @@ void BaseScene::drawProperty()
 
     if ( this->isRendering)
     {
-        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, false);
+        ImGui::PushItemFlag(ImGuiItemFlags_Disabled, true);
         ImGui::PushStyleVar(ImGuiStyleVar_Alpha, ImGui::GetStyle().Alpha * 0.5f);
     }
 
